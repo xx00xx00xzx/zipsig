@@ -942,7 +942,7 @@ function App() {
         </motion.div>
 
         {/* Main Content */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {mode === 'sign' ? (
             <SignSection
               key="sign"
@@ -1088,10 +1088,10 @@ function SignSection({
   return (
     <motion.div
       className="content-section"
-      initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 50 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       {/* File Upload Area */}
       <div 
@@ -1502,10 +1502,10 @@ function VerifySection({ onDrop, verificationResult, t }: VerifyProps) {
   return (
     <motion.div
       className="content-section"
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       {/* Dropzone */}
       <div 
@@ -1686,10 +1686,10 @@ function FAQSection({ t }: FAQSectionProps) {
   return (
     <motion.div
       className="content-section"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <motion.div 
         className="faq-header"

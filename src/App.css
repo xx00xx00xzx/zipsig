@@ -7,6 +7,22 @@
   padding: 0;
 }
 
+/* Performance optimizations for animations only */
+.wave-path,
+.wave-background,
+[class*="motion-"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Smooth transitions for content sections */
+.content-section {
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -17,17 +33,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  background: #000000;
 }
 
 /* App Container */
 .app-container {
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    #0a0a0a 0%,
-    #1a1a1a 50%,
-    #000000 100%
-  );
+  background: #000000;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
@@ -43,6 +55,8 @@ body {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .wave-svg {
@@ -51,7 +65,8 @@ body {
   left: 0;
   width: 100%;
   height: 400px;
-  transform: none;
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 .wave-path {
@@ -1991,6 +2006,21 @@ body {
   .detail-value {
     text-align: left;
   }
+  
+  /* Mobile: Stack icon and text vertically */
+  .mode-button {
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 8px;
+    min-width: 65px;
+    text-align: center;
+  }
+  
+  .mode-button span {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1999,8 +2029,19 @@ body {
   }
   
   .mode-button {
-    padding: 10px 20px;
-    font-size: 0.9rem;
+    padding: 10px 6px;
+    min-width: 60px;
+    font-size: 0.7rem;
+  }
+  
+  .mode-button span {
+    font-size: 0.7rem;
+  }
+  
+  /* Contact button - icon only on very small screens */
+  .mode-button.contact-button {
+    padding: 10px;
+    min-width: 44px;
   }
   
   .dropzone-content h3 {
@@ -2009,6 +2050,24 @@ body {
   
   .dropzone-content p {
     font-size: 0.9rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .mode-button {
+    padding: 8px 4px;
+    min-width: 55px;
+    gap: 4px;
+  }
+  
+  .mode-button span {
+    font-size: 0.65rem;
+  }
+  
+  .mode-button.contact-button {
+    padding: 8px;
+    min-width: 40px;
   }
 }
 
