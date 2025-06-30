@@ -153,7 +153,6 @@ zipsig/
 
 ## サポート
 
-- 📧 **Email**: support@zipsig.com
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/your-username/zipsig/issues)
 - 💡 **Feature Requests**: [GitHub Discussions](https://github.com/your-username/zipsig/discussions)
 
@@ -166,4 +165,4 @@ zipsig/
 
 ---
 
-**ZipSig** - あなたのデジタル資産を守る、信頼できるパートナー
+
