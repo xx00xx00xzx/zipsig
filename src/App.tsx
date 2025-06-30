@@ -28,12 +28,11 @@ import { TreeItem } from './components/ui/TreeItem';
 // ZipSig Logo Component
 const ZipSigLogo = ({ className }: { className?: string }) => (
   <svg width="40" height="40" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" fill="none" className={className}>
-    <rect width="128" height="128" rx="24" fill="#1E293B"/>
-    <path d="M36 40h56v48H36z" fill="#F1F5F9" rx="8"/>
-    <path d="M44 48h40v32H44z" fill="#1E293B"/>
-    <text x="50%" y="85" textAnchor="middle" fill="#F1F5F9" fontFamily="monospace" fontSize="12">.sig</text>
-    <path d="M64 20v20" stroke="#94A3B8" strokeWidth="2" strokeDasharray="4 2"/>
-    <circle cx="64" cy="20" r="4" fill="#94A3B8"/>
+    <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8"/>
+    <path d="M64 28c4.418 0 8 3.582 8 8v12h-16V36c0-4.418 3.582-8 8-8z" fill="currentColor"/>
+    <rect x="60" y="52" width="8" height="8" rx="2" fill="currentColor"/>
+    <rect x="60" y="64" width="8" height="8" rx="2" fill="currentColor"/>
+    <rect x="60" y="76" width="8" height="8" rx="2" fill="currentColor"/>
   </svg>
 );
 import './App.css';
@@ -1734,4 +1733,12 @@ function FAQSection({ t }: FAQSectionProps) {
   );
 }
 
-export default App;
+export default function AppWithAnalytics() {
+  return (
+    <>
+      <App />
+      <Analytics />
+      <SpeedInsights />
+    </>
+  );
+}

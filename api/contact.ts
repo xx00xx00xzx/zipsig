@@ -176,7 +176,7 @@ function createAutoReplyTemplate(data: ContactFormData): string {
         </div>
         <div class="footer">
           <p>ZipSig - デジタルファイル署名システム</p>
-          <p>https://zipsig.app</p>
+          <p>https://www.zipsig.site</p>
         </div>
       </div>
     </body>
