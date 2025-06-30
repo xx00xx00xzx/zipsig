@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://zipsig.app/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Disallow sensitive areas (if any)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Allow important files
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+Allow: /*.ico 
