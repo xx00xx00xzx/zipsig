@@ -22,6 +22,7 @@ import { formatFileSize, buildFileTree } from './utils/file';
 import ContactForm from './components/ContactForm';
 import { InfoPopup } from './components/ui/InfoPopup';
 import { ExtractSection } from './components/sections/ExtractSection';
+import { TreeItem } from './components/ui/TreeItem';
 import './App.css';
 import { useTranslation, type Language } from './translations';
 
@@ -53,16 +54,6 @@ interface ZipsigData {
 }
 
 type Mode = 'sign' | 'verify' | 'extract' | 'faq';
-
-// Animation constants
-const ANIMATIONS = {
-  hover: { scale: 1.05 },
-  tap: { scale: 0.95 },
-  spring: { type: "spring", stiffness: 400, damping: 30 } as const,
-  smallHover: { scale: 1.02 },
-  iconHover: { scale: 1.1 },
-  iconTap: { scale: 0.9 }
-};
 
 function App() {
   const [mode, setMode] = useState<Mode>('sign');
@@ -1721,89 +1712,5 @@ function FAQSection({ t }: FAQSectionProps) {
     </motion.div>
   );
 }
-
-// Tree Item Component
-interface TreeItemProps {
-  node: TreeNode;
-  level: number;
-  expanded: boolean;
-  onToggle: () => void;
-}
-
-function TreeItem({ node, level, expanded, onToggle }: TreeItemProps) {
-  const [isExpanded, setIsExpanded] = useState(expanded);
-
-  const handleToggle = () => {
-    if (!node.isFile && node.children.length > 0) {
-      setIsExpanded(!isExpanded);
-      onToggle();
-    }
-  };
-
-  return (
-    <>
-      <motion.div
-        className="tree-item"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: level * 0.05 }}
-        style={{ paddingLeft: `${level * 20}px` }}
-      >
-        <div 
-          className="tree-item-content"
-          onClick={handleToggle}
-        >
-          {!node.isFile && node.children.length > 0 && (
-            <motion.div
-              className="tree-toggle"
-              animate={{ rotate: isExpanded ? 90 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <svg width="8" height="8" viewBox="0 0 8 8">
-                <path d="M2 1l4 3-4 3z" fill="currentColor"/>
-              </svg>
-            </motion.div>
-          )}
-          
-          <div className="tree-icon">
-            {node.isFile ? (
-              <FileText size={16} />
-            ) : (
-              <Folder size={16} />
-            )}
-          </div>
-          
-          <span className="tree-name">{node.name}</span>
-          
-          {node.isFile && node.size && (
-            <span className="tree-size">{formatFileSize(node.size)}</span>
-          )}
-        </div>
-      </motion.div>
-      
-      <AnimatePresence>
-        {isExpanded && !node.isFile && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {node.children.map((child, index) => (
-              <TreeItem
-                key={child.path || index}
-                node={child}
-                level={level + 1}
-                expanded={false}
-                onToggle={() => {}}
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
-
 
 export default App;
