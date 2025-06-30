@@ -1,7 +1,14 @@
 {
+  "buildCommand": "npm run build",
+  "framework": "vite",
   "functions": {
     "api/contact.ts": {
       "runtime": "@vercel/node@3.0.7"
+    }
+  },
+  "build": {
+    "env": {
+      "NODE_VERSION": "18"
     }
   },
   "rewrites": [

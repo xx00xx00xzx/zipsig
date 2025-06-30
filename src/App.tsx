@@ -18,11 +18,24 @@ import {
 } from 'lucide-react';
 import { zipSync, unzipSync, strToU8 } from 'fflate';
 import { formatFileSize, buildFileTree } from './utils/file';
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 import ContactForm from './components/ContactForm';
 import { InfoPopup } from './components/ui/InfoPopup';
 import { ExtractSection } from './components/sections/ExtractSection';
 import { TreeItem } from './components/ui/TreeItem';
+// ZipSig Logo Component
+const ZipSigLogo = ({ className }: { className?: string }) => (
+  <svg width="40" height="40" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" fill="none" className={className}>
+    <rect width="128" height="128" rx="24" fill="#1E293B"/>
+    <path d="M36 40h56v48H36z" fill="#F1F5F9" rx="8"/>
+    <path d="M44 48h40v32H44z" fill="#1E293B"/>
+    <text x="50%" y="85" textAnchor="middle" fill="#F1F5F9" fontFamily="monospace" fontSize="12">.sig</text>
+    <path d="M64 20v20" stroke="#94A3B8" strokeWidth="2" strokeDasharray="4 2"/>
+    <circle cx="64" cy="20" r="4" fill="#94A3B8"/>
+  </svg>
+);
 import './App.css';
 import { useTranslation, type Language } from './translations';
 
@@ -814,6 +827,14 @@ function App() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '12px' }}>
+            <motion.div
+              className="logo-container"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <ZipSigLogo className="hero-logo" />
+            </motion.div>
             <h1 className="hero-title">{t.title}</h1>
             <motion.button
               className="language-toggle"
