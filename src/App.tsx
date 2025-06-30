@@ -17,7 +17,7 @@ import {
   Info
 } from 'lucide-react';
 import { zipSync, unzipSync, strToU8 } from 'fflate';
-import { formatFileSize } from './utils/file';
+import { formatFileSize, buildFileTree } from './utils/file';
 
 import ContactForm from './components/ContactForm';
 import { InfoPopup } from './components/ui/InfoPopup';
@@ -53,6 +53,16 @@ interface ZipsigData {
 }
 
 type Mode = 'sign' | 'verify' | 'extract' | 'faq';
+
+// Animation constants
+const ANIMATIONS = {
+  hover: { scale: 1.05 },
+  tap: { scale: 0.95 },
+  spring: { type: "spring", stiffness: 400, damping: 30 } as const,
+  smallHover: { scale: 1.02 },
+  iconHover: { scale: 1.1 },
+  iconTap: { scale: 0.9 }
+};
 
 function App() {
   const [mode, setMode] = useState<Mode>('sign');
@@ -1064,45 +1074,6 @@ function SignSection({
   // Calculate total file size
   const totalSize = files.reduce((sum, file) => sum + file.size, 0);
 
-  // Build file tree for display
-  const buildFileTree = (files: File[]): TreeNode => {
-    const root: TreeNode = {
-      name: 'root',
-      path: '',
-      isFile: false,
-      children: []
-    };
-
-    files.forEach(file => {
-      const path = (file as any).webkitRelativePath || file.name;
-      const parts = path.split('/');
-      let currentNode = root;
-
-      parts.forEach((part: string, index: number) => {
-        const isFile = index === parts.length - 1;
-        const currentPath = parts.slice(0, index + 1).join('/');
-        
-        let child = currentNode.children.find(c => c.name === part);
-        if (!child) {
-          child = {
-            name: part,
-            path: currentPath,
-            isFile,
-            size: isFile ? file.size : undefined,
-            children: []
-          };
-          currentNode.children.push(child);
-        }
-        
-        if (!isFile) {
-          currentNode = child;
-        }
-      });
-    });
-
-    return root;
-  };
-
   return (
     <motion.div
       className="content-section"
@@ -1767,14 +1738,6 @@ function TreeItem({ node, level, expanded, onToggle }: TreeItemProps) {
       setIsExpanded(!isExpanded);
       onToggle();
     }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
 
   return (
