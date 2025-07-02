@@ -37,7 +37,7 @@ export function ExtractSection({
       setHashCopied(true);
       setTimeout(() => setHashCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy hash to clipboard:', err);
+      // console.error('Failed to copy hash to clipboard:', err);
     }
   };
 

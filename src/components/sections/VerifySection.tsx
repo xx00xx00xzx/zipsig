@@ -40,7 +40,7 @@ export function VerifySection({ language, onDrop, verificationResult }: VerifySe
       setHashCopied(true);
       setTimeout(() => setHashCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy hash to clipboard:', err);
+      // console.error('Failed to copy hash to clipboard:', err);
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import {
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { zipSync, unzipSync, strToU8 } from 'fflate';
 import { formatFileSize, buildFileTree } from './utils/file';
+import { generateSecurePassword, encryptFile, decryptFile } from './utils/crypto';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
@@ -110,83 +111,11 @@ function App() {
 
   const t = useTranslation(language);
 
-  // Password generation helper function
-  const generateSecurePassword = (length: number = 16): string => {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-    const array = new Uint8Array(length);
-    crypto.getRandomValues(array);
-    return Array.from(array, byte => charset[byte % charset.length]).join('');
-  };
-
-  const handleGeneratePassword = () => {
+  const handleGeneratePassword = useCallback(() => {
     const newPassword = generateSecurePassword(16);
     setEncryptionPassword(newPassword);
     setEncryptionPasswordConfirm(newPassword);
-  };
-
-  // AES Encryption helper functions
-  const deriveKey = async (password: string, salt: Uint8Array): Promise<CryptoKey> => {
-    const passwordBuffer = new TextEncoder().encode(password);
-    const importedKey = await crypto.subtle.importKey(
-      'raw',
-      passwordBuffer,
-      'PBKDF2',
-      false,
-      ['deriveBits', 'deriveKey']
-    );
-
-    return await crypto.subtle.deriveKey(
-      {
-        name: 'PBKDF2',
-        salt: salt,
-        iterations: 100000,
-        hash: 'SHA-256'
-      },
-      importedKey,
-      { name: 'AES-CBC', length: 256 },
-      true,
-      ['encrypt', 'decrypt']
-    );
-  };
-
-  const encryptFile = async (fileData: Uint8Array, password: string): Promise<{
-    encryptedData: Uint8Array;
-    salt: Uint8Array;
-    iv: Uint8Array;
-  }> => {
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const iv = crypto.getRandomValues(new Uint8Array(16));
-    const key = await deriveKey(password, salt);
-
-    const encryptedBuffer = await crypto.subtle.encrypt(
-      { name: 'AES-CBC', iv: iv },
-      key,
-      fileData
-    );
-
-    return {
-      encryptedData: new Uint8Array(encryptedBuffer),
-      salt,
-      iv
-    };
-  };
-
-  const decryptFile = async (
-    encryptedData: Uint8Array,
-    password: string,
-    salt: Uint8Array,
-    iv: Uint8Array
-  ): Promise<Uint8Array> => {
-    const key = await deriveKey(password, salt);
-    
-    const decryptedBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-CBC', iv: iv },
-      key,
-      encryptedData
-    );
-
-    return new Uint8Array(decryptedBuffer);
-  };
+  }, []);
 
   const extractAndDecrypt = async () => {
     if (!extractedZipsig || !extractPassword) return;
@@ -314,9 +243,9 @@ function App() {
           apiStatus: 'online'
         });
         
-        console.log(`WorldTimeAPI connected successfully after ${retryCount + 1} attempts`);
+        // console.log(`WorldTimeAPI connected successfully after ${retryCount + 1} attempts`);
       } catch (error) {
-        console.warn(`WorldTimeAPI attempt ${retryCount + 1} failed:`, error);
+        // console.warn(`WorldTimeAPI attempt ${retryCount + 1} failed:`, error);
         
         // Show checking status during retries
         setTimeStatus(prev => ({
@@ -344,7 +273,7 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleFolderSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFolderSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
     if (fileList) {
       const filesArray = Array.from(fileList);
@@ -359,9 +288,9 @@ function App() {
         setFolderName('Selected Folder');
       }
     }
-  };
+  }, []);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
     if (fileList) {
       const filesArray = Array.from(fileList);
@@ -369,7 +298,7 @@ function App() {
       setVerificationResult(null);
       setFolderName('');
     }
-  };
+  }, []);
 
   const handleExtractDrop = async (droppedFiles: File[]) => {
     const zipFile = droppedFiles[0];
@@ -493,7 +422,7 @@ function App() {
             dataToVerify
           );
         } catch (e) {
-          console.warn('New verification method failed, trying legacy method');
+          // console.warn('New verification method failed, trying legacy method');
         }
       }
       
@@ -553,11 +482,11 @@ function App() {
           }
           
           const timeData = await timeResponse.json();
-          console.log(`UTC timestamp retrieved successfully on attempt ${retryCount + 1}`);
+          // console.log(`UTC timestamp retrieved successfully on attempt ${retryCount + 1}`);
           return timeData.datetime.split('.')[0] + 'Z';
         } catch (error) {
-          console.warn(`Timestamp API attempt ${retryCount + 1} failed:`, error);
-          console.log(`Will retry in ${retryDelay}ms...`);
+          // console.warn(`Timestamp API attempt ${retryCount + 1} failed:`, error);
+          // console.log(`Will retry in ${retryDelay}ms...`);
           
           // Wait before retry - this will continue indefinitely until success
           await new Promise(resolve => setTimeout(resolve, retryDelay));
@@ -1022,7 +951,7 @@ interface SignSectionProps {
   t: any;
 }
 
-function SignSection({ 
+const SignSection = React.memo(function SignSection({ 
   files, 
   folderName, 
   creatorId, 
@@ -1382,7 +1311,7 @@ function SignSection({
       />
     </motion.div>
   );
-}
+});
 
 // Verify Section Component
 interface VerifyProps {
@@ -1395,7 +1324,7 @@ interface VerifyProps {
   t: any;
 }
 
-function VerifySection({ onDrop, verificationResult, t }: VerifyProps) {
+const VerifySection = React.memo(function VerifySection({ onDrop, verificationResult, t }: VerifyProps) {
   const [privateKeyResult, setPrivateKeyResult] = useState<{
     isValid: boolean;
     message: string;
@@ -1642,14 +1571,14 @@ function VerifySection({ onDrop, verificationResult, t }: VerifyProps) {
       </AnimatePresence>
     </motion.div>
   );
-}
+});
 
 // FAQ Section Component
 interface FAQSectionProps {
   t: any;
 }
 
-function FAQSection({ t }: FAQSectionProps) {
+const FAQSection = React.memo(function FAQSection({ t }: FAQSectionProps) {
   const faqItems = [
     { question: t.faqWhat, answer: t.faqWhatAnswer },
     { question: t.faqZipContents, answer: t.faqZipContentsAnswer },
@@ -1694,7 +1623,7 @@ function FAQSection({ t }: FAQSectionProps) {
       </div>
     </motion.div>
   );
-}
+});
 
 export default function AppWithAnalytics() {
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Lock, AlertCircle, Info } from 'lucide-react';
 import type { TreeNode } from '../../types/index';
-import { buildFileTree } from '../../utils/file';
+import { buildFileTree, formatFileSize } from '../../utils/file';
 import { TreeItem } from '../ui/TreeItem';
 import { InfoPopup } from '../ui/InfoPopup';
 import { useTranslation, type Language } from '../../translations';
@@ -56,14 +56,7 @@ export function SignSection({
   // Calculate total file size
   const totalSize = files.reduce((sum, file) => sum + file.size, 0);
 
-  // Format file size
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
+
   
   // Note: Dropzone is available if needed for future drag and drop functionality
 

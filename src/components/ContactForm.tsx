@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, X, User, MessageSquare, Type, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -19,7 +19,7 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ onClose, t }) => {
+const ContactForm: React.FC<ContactFormProps> = memo(({ onClose, t }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -354,6 +354,6 @@ const ContactForm: React.FC<ContactFormProps> = ({ onClose, t }) => {
       </motion.div>
     </AnimatePresence>
   );
-};
+});
 
 export default ContactForm; 
