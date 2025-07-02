@@ -68,8 +68,14 @@ interface ZipsigData {
 type Mode = 'sign' | 'verify' | 'extract' | 'faq';
 
 function App() {
+  // Detect browser language and set default language
+  const getDefaultLanguage = (): Language => {
+    const browserLanguage = navigator.language || navigator.languages[0];
+    return browserLanguage.startsWith('ja') ? 'ja' : 'en';
+  };
+
   const [mode, setMode] = useState<Mode>('sign');
-  const [language, setLanguage] = useState<Language>('ja');
+  const [language, setLanguage] = useState<Language>(getDefaultLanguage());
   const [files, setFiles] = useState<File[]>([]);
   const [creatorId, setCreatorId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -726,12 +732,7 @@ function App() {
   return (
     <div className="app-container">
       {/* Wave Background */}
-      <motion.div 
-        className="wave-background"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2 }}
-      >
+      <div className="wave-background">
         <svg className="wave-svg" viewBox="0 0 1200 320" preserveAspectRatio="none">
           <defs>
             <linearGradient id="wave1Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -810,30 +811,20 @@ function App() {
             }}
           />
         </svg>
-      </motion.div>
+      </div>
 
       <motion.div 
         className="main-container"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
         {/* Hero Header */}
-        <motion.div 
-          className="hero-header"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
+        <div className="hero-header">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '12px' }}>
-            <motion.div
-              className="logo-container"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
+            <div className="logo-container">
               <ZipSigLogo className="hero-logo" />
-            </motion.div>
+            </div>
             <h1 className="hero-title">{t.title}</h1>
             <motion.button
               className="language-toggle"
@@ -849,12 +840,7 @@ function App() {
           <p className="hero-subtitle">{t.subtitle}</p>
           
           {/* Time Status Display */}
-          <motion.div 
-            className="time-status"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
+          <div className="time-status">
             <div className="time-display">
               <div className="time-row">
                 <span className="time-label">{t.utcTime}</span>
@@ -882,16 +868,11 @@ function App() {
                 <span className="time-value">{timeStatus.localTime ? new Date(timeStatus.localTime).toLocaleString(language === 'ja' ? 'ja-JP' : 'en-US') : t.checking}</span>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Mode Switcher */}
-        <motion.div 
-          className="mode-switcher-container"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
+        <div className="mode-switcher-container">
           <div className="mode-switcher">
             <motion.button
               className={`mode-button ${mode === 'sign' ? 'active' : ''}`}
@@ -939,10 +920,10 @@ function App() {
               <Mail size={18} />
             </motion.button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Main Content */}
-        <AnimatePresence>
+        {/* Main Content and Notifications */}
+        <AnimatePresence mode="wait">
           {mode === 'sign' ? (
             <SignSection
               key="sign"
@@ -992,12 +973,11 @@ function App() {
               t={t}
             />
           )}
-        </AnimatePresence>
-
-        {/* Success Notification */}
-        <AnimatePresence>
+          
+          {/* Success Notification - moved inside same AnimatePresence */}
           {showNotification && (
             <motion.div
+              key="notification"
               className="success-notification"
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1691,42 +1671,25 @@ function FAQSection({ t }: FAQSectionProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <motion.div 
-        className="faq-header"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
+      <div className="faq-header">
         <h2 className="faq-title">{t.faqTitle}</h2>
         <p className="faq-subtitle">{t.faqSubtitle}</p>
-      </motion.div>
+      </div>
 
       <div className="faq-container">
         {faqItems.map((item, index) => (
-          <motion.div
+          <div
             key={index}
             className="faq-item"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + index * 0.1 }}
           >
-            <motion.div 
-              className="faq-question"
-              whileHover={{ scale: 1.01 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            >
+            <div className="faq-question">
               <HelpCircle size={20} />
               <h3>{item.question}</h3>
-            </motion.div>
-            <motion.div 
-              className="faq-answer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-            >
+            </div>
+            <div className="faq-answer">
               <p>{item.answer}</p>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         ))}
       </div>
     </motion.div>
