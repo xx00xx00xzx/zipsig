@@ -7,20 +7,78 @@
   padding: 0;
 }
 
-/* Performance optimizations for animations only */
-.wave-path,
-.wave-background,
-[class*="motion-"] {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+/* Performance optimizations - only for desktop */
+@media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+  .wave-path,
+  .wave-background,
+  [class*="motion-"] {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+}
+
+/* Disable performance optimizations on mobile */
+@media (max-width: 768px) {
+  .wave-path,
+  .wave-background,
+  [class*="motion-"] {
+    -webkit-transform: none;
+    transform: none;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    will-change: auto;
+  }
 }
 
 /* Smooth transitions for content sections */
 .content-section {
-  will-change: opacity;
   transform: translateZ(0);
+}
+
+/* Disable animations on mobile and respect user's motion preferences */
+@media (max-width: 768px) and (hover: none) and (pointer: coarse),
+(prefers-reduced-motion: reduce) {
+  .wave-path {
+    animation: none !important;
+    will-change: auto !important;
+  }
+  
+  .wave-background {
+    will-change: auto;
+  }
+  
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Reduce all motion for mobile performance */
+  .mode-button,
+  .upload-btn,
+  .generate-button,
+  .dropzone-container {
+    transform: none !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  }
+  
+  /* Disable hover effects on mobile */
+  .mode-button:hover,
+  .upload-btn:hover,
+  .generate-button:hover {
+    transform: none !important;
+  }
+  
+  /* Ensure API status animation is still visible but less intensive */
+  .api-status.checking {
+    animation: none;
+  }
+  
+  /* Reduce notification motion */
+  .success-notification {
+    animation: none;
+  }
 }
 
 html {
@@ -55,7 +113,6 @@ body {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  will-change: transform;
   transform: translateZ(0);
 }
 
@@ -66,7 +123,22 @@ body {
   width: 100%;
   height: 400px;
   transform: translateZ(0);
-  will-change: auto;
+}
+
+/* Reduce wave animation complexity on mobile */
+@media (max-width: 768px) {
+  .wave-svg {
+    height: 300px;
+    /* Disable GPU acceleration on mobile for better performance */
+    transform: none;
+  }
+  
+  .wave-path {
+    /* Remove GPU-intensive properties on mobile */
+    -webkit-transform: none;
+    transform: none;
+    will-change: auto;
+  }
 }
 
 .wave-path {
@@ -332,6 +404,8 @@ body {
 /* Mode Switcher */
 .mode-switcher-container {
   margin-bottom: 8px;
+  /* Prevent layout shift */
+  min-height: 60px;
 }
 
 .mode-switcher {
@@ -1470,6 +1544,8 @@ body {
     0 16px 32px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.1);
   z-index: 1000;
+  /* Prevent notification from causing reflow */
+  contain: layout style;
 }
 
 /* Contact Form Styles */

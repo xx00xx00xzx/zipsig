@@ -215,7 +215,7 @@ function App() {
     if (twitterDescription) twitterDescription.setAttribute('content', descriptions[mode]);
   }, [mode]);
 
-  // Check API status and update time on load
+  // Check API status and update time on load with RAF optimization
   React.useEffect(() => {
     const checkTimeAPI = async (retryCount = 0) => {
       const retryDelay = Math.min(2000 * Math.pow(1.5, retryCount), 30000); // Exponential backoff with max 30s
@@ -262,15 +262,34 @@ function App() {
 
     checkTimeAPI();
     
-    // Update local time every second
-    const interval = setInterval(() => {
-      setTimeStatus(prev => ({
-        ...prev,
-        localTime: new Date().toISOString()
-      }));
-    }, 1000);
+    // Update local time every second - use RAF for better performance on mobile
+    let rafId: number;
+    let lastUpdate = Date.now();
+    let isActive = true;
+    
+    const updateTime = () => {
+      if (!isActive) return;
+      
+      const now = Date.now();
+      if (now - lastUpdate >= 1000) {
+        lastUpdate = now;
+        setTimeStatus(prev => ({
+          ...prev,
+          localTime: new Date().toISOString()
+        }));
+      }
+      rafId = requestAnimationFrame(updateTime);
+    };
+    
+    // Start the animation frame loop
+    rafId = requestAnimationFrame(updateTime);
 
-    return () => clearInterval(interval);
+    return () => {
+      isActive = false;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, []);
 
   const handleFolderSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -678,19 +697,19 @@ function App() {
             </linearGradient>
           </defs>
           
-          {/* Wave 1 - Blue */}
+          {/* Wave 1 - Blue - Disable animation on mobile for performance */}
           <motion.path 
             className="wave-path wave-1"
             d="M0,0 L1200,0 L1200,200 C900,150 600,100 300,150 C200,170 100,180 0,160 Z"
             fill="url(#wave1Gradient)"
-            animate={{
+            animate={window.innerWidth > 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? {
               d: [
                 "M0,0 L1200,0 L1200,200 C900,150 600,100 300,150 C200,170 100,180 0,160 Z",
                 "M0,0 L1200,0 L1200,180 C900,130 600,120 300,170 C200,190 100,160 0,140 Z",
                 "M0,0 L1200,0 L1200,220 C900,170 600,80 300,130 C200,150 100,200 0,180 Z",
                 "M0,0 L1200,0 L1200,200 C900,150 600,100 300,150 C200,170 100,180 0,160 Z"
               ]
-            }}
+            } : undefined}
             transition={{
               duration: 8,
               repeat: Infinity,
@@ -698,19 +717,19 @@ function App() {
             }}
           />
           
-          {/* Wave 2 - Green */}
+          {/* Wave 2 - Green - Disable animation on mobile for performance */}
           <motion.path 
             className="wave-path wave-2"
             d="M0,40 C300,60 600,20 900,40 C1000,50 1100,30 1200,40 L1200,240 C900,200 600,160 300,180 C200,190 100,200 0,180 Z"
             fill="url(#wave2Gradient)"
-            animate={{
+            animate={window.innerWidth > 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? {
               d: [
                 "M0,40 C300,60 600,20 900,40 C1000,50 1100,30 1200,40 L1200,240 C900,200 600,160 300,180 C200,190 100,200 0,180 Z",
                 "M0,20 C300,40 600,0 900,20 C1000,30 1100,10 1200,20 L1200,220 C900,180 600,140 300,160 C200,170 100,180 0,160 Z",
                 "M0,60 C300,80 600,40 900,60 C1000,70 1100,50 1200,60 L1200,260 C900,220 600,180 300,200 C200,210 100,220 0,200 Z",
                 "M0,40 C300,60 600,20 900,40 C1000,50 1100,30 1200,40 L1200,240 C900,200 600,160 300,180 C200,190 100,200 0,180 Z"
               ]
-            }}
+            } : undefined}
             transition={{
               duration: 10,
               repeat: Infinity,
@@ -719,19 +738,19 @@ function App() {
             }}
           />
           
-          {/* Wave 3 - Orange */}
+          {/* Wave 3 - Orange - Disable animation on mobile for performance */}
           <motion.path 
             className="wave-path wave-3"
             d="M0,80 C200,100 400,60 600,80 C800,100 1000,60 1200,80 L1200,280 C1000,240 800,200 600,220 C400,240 200,260 0,220 Z"
             fill="url(#wave3Gradient)"
-            animate={{
+            animate={window.innerWidth > 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? {
               d: [
                 "M0,80 C200,100 400,60 600,80 C800,100 1000,60 1200,80 L1200,280 C1000,240 800,200 600,220 C400,240 200,260 0,220 Z",
                 "M0,100 C200,120 400,80 600,100 C800,120 1000,80 1200,100 L1200,300 C1000,260 800,220 600,240 C400,260 200,280 0,240 Z",
                 "M0,60 C200,80 400,40 600,60 C800,80 1000,40 1200,60 L1200,260 C1000,220 800,180 600,200 C400,220 200,240 0,200 Z",
                 "M0,80 C200,100 400,60 600,80 C800,100 1000,60 1200,80 L1200,280 C1000,240 800,200 600,220 C400,240 200,260 0,220 Z"
               ]
-            }}
+            } : undefined}
             transition={{
               duration: 12,
               repeat: Infinity,
@@ -776,10 +795,10 @@ function App() {
                 <span className="time-value">{timeStatus.utcTime ? new Date(timeStatus.utcTime).toLocaleString(language === 'ja' ? 'ja-JP' : 'en-US', { timeZone: 'UTC' }) : t.checking}</span>
                 <motion.div 
                   className={`api-status ${timeStatus.apiStatus}`}
-                  animate={{ 
-                    scale: timeStatus.apiStatus === 'checking' ? [1, 1.1, 1] : 1,
-                    opacity: timeStatus.apiStatus === 'checking' ? [1, 0.5, 1] : 1
-                  }}
+                  animate={timeStatus.apiStatus === 'checking' ? { 
+                    scale: [1, 1.1, 1],
+                    opacity: [1, 0.5, 1]
+                  } : undefined}
                   transition={{ duration: 1, repeat: timeStatus.apiStatus === 'checking' ? Infinity : 0 }}
                 >
                   {timeStatus.apiStatus === 'online' && <Check size={12} />}
@@ -852,7 +871,7 @@ function App() {
         </div>
 
         {/* Main Content and Notifications */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {mode === 'sign' ? (
             <SignSection
               key="sign"
@@ -977,7 +996,11 @@ const SignSection = React.memo(function SignSection({
     onDrop: () => {
       // Handle dropped files
     },
-    noClick: true
+    noClick: true,
+    // Prevent multiple event handlers on mobile
+    noDragEventsBubbling: true,
+    // Prevent touch events from interfering
+    noKeyboard: true
   });
 
   const validatePasswords = () => {
