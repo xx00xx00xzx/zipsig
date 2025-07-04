@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import { Shield, Check, AlertCircle, Clock, Unlock, Copy } from 'lucide-react';
@@ -11,7 +11,7 @@ interface VerifySectionProps {
   verificationResult: VerificationResult | null;
 }
 
-export function VerifySection({ language, onDrop, verificationResult }: VerifySectionProps) {
+export const VerifySection = React.memo(function VerifySection({ language, onDrop, verificationResult }: VerifySectionProps) {
   const t = useTranslation(language);
   const [privateKeyResult, setPrivateKeyResult] = useState<{
     isValid: boolean;
@@ -303,4 +303,4 @@ export function VerifySection({ language, onDrop, verificationResult }: VerifySe
       </AnimatePresence>
     </motion.div>
   );
-}
+});

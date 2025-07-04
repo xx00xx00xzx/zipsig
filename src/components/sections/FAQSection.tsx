@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle } from 'lucide-react';
 import { useTranslation, type Language } from '../../translations';
@@ -6,7 +7,7 @@ interface FAQSectionProps {
   language: Language;
 }
 
-export function FAQSection({ language }: FAQSectionProps) {
+export const FAQSection = React.memo(function FAQSection({ language }: FAQSectionProps) {
   const t = useTranslation(language);
   
   const faqItems = [
@@ -70,4 +71,4 @@ export function FAQSection({ language }: FAQSectionProps) {
       </div>
     </motion.div>
   );
-}
+});

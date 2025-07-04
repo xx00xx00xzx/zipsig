@@ -28,7 +28,7 @@ interface SignSectionProps {
   onGeneratePassword: () => void;
 }
 
-export function SignSection({ 
+export const SignSection = React.memo(function SignSection({ 
   language,
   files, 
   folderName, 
@@ -360,4 +360,4 @@ export function SignSection({
       />
     </motion.div>
   );
-}
+});

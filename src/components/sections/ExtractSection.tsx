@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
 import { Check, Clock, Unlock, Copy, Lock } from 'lucide-react';
@@ -18,7 +18,7 @@ interface ExtractSectionProps {
   isExtracting: boolean;
 }
 
-export function ExtractSection({
+export const ExtractSection = React.memo(function ExtractSection({
   language,
   onDrop,
   extractedZipsig,
@@ -302,4 +302,4 @@ export function ExtractSection({
 
     </motion.div>
   );
-}
+});

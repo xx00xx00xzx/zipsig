@@ -1,4 +1,5 @@
-// File structure types
+// ZipSig共通型定義
+
 export interface FileStructureItem {
   path: string;
   size: number;
@@ -16,7 +17,6 @@ export interface TreeNode {
   encrypted?: boolean;
 }
 
-// ZipSig data types
 export interface ZipsigData {
   creator_id: string;
   timestamp: string;
@@ -28,24 +28,24 @@ export interface ZipsigData {
   encrypted?: boolean;
 }
 
-// Application modes
 export type Mode = 'sign' | 'verify' | 'extract' | 'faq';
+export type Language = 'ja' | 'en';
 
-// Verification result
+// 検証結果の型
 export interface VerificationResult {
   isValid: boolean;
   zipsig: ZipsigData | null;
   message: string;
 }
 
-// Time status
+// 時刻API状態の型
 export interface TimeStatus {
   utcTime: string;
   localTime: string;
   apiStatus: 'checking' | 'online' | 'offline';
 }
 
-// Extended File type with webkitRelativePath
+// ファイルの型
 export interface FileWithRelativePath extends File {
   webkitRelativePath: string;
 }
