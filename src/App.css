@@ -41,10 +41,7 @@
 /* Disable animations on mobile and respect user's motion preferences */
 @media (max-width: 768px) and (hover: none) and (pointer: coarse),
 (prefers-reduced-motion: reduce) {
-  .wave-path {
-    animation: none !important;
-    will-change: auto !important;
-  }
+  /* Keep only the 5-color wave animations on mobile - they remain functional */
   
   .wave-background {
     will-change: auto;
@@ -54,30 +51,95 @@
     -webkit-tap-highlight-color: transparent;
   }
   
-  /* Reduce all motion for mobile performance */
+  /* Remove all other animations and transitions on mobile */
   .mode-button,
   .upload-btn,
   .generate-button,
-  .dropzone-container {
+  .dropzone-container,
+  .selection-button,
+  .file-card,
+  .security-item,
+  .faq-item,
+  .contact-form-close,
+  .contact-form-submit,
+  .generate-password-btn,
+  .copy-hash-btn,
+  .tree-download-btn,
+  .download-all-btn,
+  .encryption-toggle,
+  .encryption-checkbox,
+  .creator-input,
+  .language-toggle,
+  .info-icon,
+  .verification-result,
+  .verification-limitations-header,
+  .popup-container,
+  .popup-close,
+  .tree-item-content,
+  .checkmark,
+  .mode-button::before,
+  .generate-button::before,
+  .contact-form-submit::before,
+  .dropzone-container::before,
+  .selection-button::before {
     transform: none !important;
-    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    transition: none !important;
+    animation: none !important;
+    will-change: auto !important;
   }
   
-  /* Disable hover effects on mobile */
+  /* Remove hover effects on mobile */
   .mode-button:hover,
   .upload-btn:hover,
-  .generate-button:hover {
+  .generate-button:hover,
+  .dropzone-container:hover,
+  .selection-button:hover,
+  .file-card:hover,
+  .security-item:hover,
+  .faq-item:hover,
+  .contact-form-close:hover,
+  .contact-form-submit:hover,
+  .generate-password-btn:hover,
+  .copy-hash-btn:hover,
+  .tree-download-btn:hover,
+  .download-all-btn:hover,
+  .encryption-toggle:hover,
+  .encryption-checkbox:hover,
+  .creator-input:focus,
+  .language-toggle:hover,
+  .info-icon:hover,
+  .verification-limitations-header:hover,
+  .popup-close:hover,
+  .tree-item-content:hover,
+  .mode-button:hover::before,
+  .generate-button:hover::before,
+  .contact-form-submit:hover::before,
+  .dropzone-container:hover::before,
+  .selection-button:hover::before {
     transform: none !important;
+    box-shadow: none !important;
+    filter: none !important;
   }
   
-  /* Ensure API status animation is still visible but less intensive */
-  .api-status.checking {
-    animation: none;
+  /* Remove loading spinner animation on mobile */
+  .loading-spinner,
+  .contact-form-loading-spinner {
+    animation: none !important;
   }
   
-  /* Reduce notification motion */
+  /* Remove notification animations on mobile */
   .success-notification {
-    animation: none;
+    animation: none !important;
+  }
+  
+  /* Remove API status checking animation on mobile */
+  .api-status.checking {
+    animation: none !important;
+  }
+  
+  /* Remove contact form animations on mobile */
+  .contact-form-container {
+    animation: none !important;
   }
 }
 
