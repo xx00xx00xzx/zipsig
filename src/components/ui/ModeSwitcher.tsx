@@ -19,13 +19,8 @@ export const ModeSwitcher: React.FC<ModeSwitcherProps> = React.memo(({
   isMobile = false
 }) => {
   
-  // Conditional motion components
-  const MotionButton = ({ children, className, onClick, ...motionProps }: any) => {
-    if (isMobile) {
-      return <button className={className} onClick={onClick}>{children}</button>;
-    }
-    return <motion.button className={className} onClick={onClick} {...motionProps}>{children}</motion.button>;
-  };
+  // Suppress unused variable warning - will be implemented later
+  void isMobile;
   return (
     <div className="mode-switcher-container">
       <div className="mode-switcher">

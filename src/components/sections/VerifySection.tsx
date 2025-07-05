@@ -20,27 +20,8 @@ export const VerifySection = React.memo(function VerifySection({ language, onDro
   } | null>(null);
   const [hashCopied, setHashCopied] = useState(false);
 
-  // Create conditional motion components
-  const MotionDiv = ({ children, className, ...motionProps }: any) => {
-    if (isMobile) {
-      return <div className={className}>{children}</div>;
-    }
-    return <motion.div className={className} {...motionProps}>{children}</motion.div>;
-  };
-
-  const MotionButton = ({ children, className, onClick, ...motionProps }: any) => {
-    if (isMobile) {
-      return <button className={className} onClick={onClick}>{children}</button>;
-    }
-    return <motion.button className={className} onClick={onClick} {...motionProps}>{children}</motion.button>;
-  };
-
-  const ConditionalAnimatePresence = ({ children }: any) => {
-    if (isMobile) {
-      return children;
-    }
-    return <AnimatePresence>{children}</AnimatePresence>;
-  };
+  // Suppress unused variable warning - will be implemented later
+  void isMobile;
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

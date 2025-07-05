@@ -205,7 +205,6 @@ export const SignSection = React.memo(function SignSection({
                   level={0}
                   expanded={index === 0}
                   onToggle={() => {}}
-                  isMobile={isMobile}
                 />
               ))}
             </MotionDiv>
@@ -224,7 +223,7 @@ export const SignSection = React.memo(function SignSection({
         <MotionInput
           type="text"
           value={creatorId}
-          onChange={(e) => setCreatorId(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreatorId(e.target.value)}
           placeholder={t.creatorIdPlaceholder}
           className="creator-input"
           whileFocus={{ scale: 1.02 }}
@@ -248,7 +247,7 @@ export const SignSection = React.memo(function SignSection({
             <input
               type="checkbox"
               checked={enableEncryption}
-              onChange={(e) => setEnableEncryption(e.target.checked)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEnableEncryption(e.target.checked)}
             />
             <span className="checkmark"></span>
             <span className="toggle-text">{t.enableEncryption}</span>
@@ -295,7 +294,7 @@ export const SignSection = React.memo(function SignSection({
                   <MotionInput
                     type="password"
                     value={encryptionPassword}
-                    onChange={(e) => setEncryptionPassword(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEncryptionPassword(e.target.value)}
                     placeholder={t.encryptionPasswordPlaceholder}
                     className="creator-input"
                     whileFocus={{ scale: 1.02 }}
@@ -319,7 +318,7 @@ export const SignSection = React.memo(function SignSection({
                 <MotionInput
                   type="password"
                   value={encryptionPasswordConfirm}
-                  onChange={(e) => setEncryptionPasswordConfirm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEncryptionPasswordConfirm(e.target.value)}
                   placeholder={t.encryptionPasswordConfirmPlaceholder}
                   className="creator-input"
                   whileFocus={{ scale: 1.02 }}

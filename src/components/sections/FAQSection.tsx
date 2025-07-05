@@ -11,6 +11,9 @@ interface FAQSectionProps {
 export const FAQSection = React.memo(function FAQSection({ language, isMobile = false }: FAQSectionProps) {
   const t = useTranslation(language);
   
+  // Suppress unused variable warning - isMobile will be used for conditional animations
+  void isMobile;
+  
   const faqItems = [
     { question: t.faqWhat, answer: t.faqWhatAnswer },
     { question: t.faqZipContents, answer: t.faqZipContentsAnswer },

@@ -30,6 +30,9 @@ export const ExtractSection = React.memo(function ExtractSection({
   isExtracting,
   isMobile = false
 }: ExtractSectionProps) {
+  
+  // Suppress unused variable warning - isMobile will be used for conditional animations
+  void isMobile;
   const t = useTranslation(language);
   const [hashCopied, setHashCopied] = useState(false);
   
