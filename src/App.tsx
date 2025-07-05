@@ -10,6 +10,7 @@ import { useExtraction } from './hooks/useExtraction';
 import { useAppState } from './hooks/useAppState';
 import { useSEO } from './hooks/useSEO';
 import { useFileHandlers } from './hooks/useFileHandlers';
+import { useMobile } from './hooks/useMobile';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
@@ -26,6 +27,8 @@ import { useTranslation } from './translations';
 
 
 function App() {
+  // Mobile detection
+  const isMobile = useMobile();
 
   const {
     mode,
@@ -76,11 +79,30 @@ function App() {
 
   const t = useTranslation(language);
 
+  // Animation settings based on device type
+  const motionSettings = {
+    mainContainer: isMobile ? {} : {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.6, ease: "easeOut" as const }
+    },
+    notification: isMobile ? {} : {
+      initial: { opacity: 0, y: 50, scale: 0.9 },
+      animate: { opacity: 1, y: 0, scale: 1 },
+      exit: { opacity: 0, y: -50, scale: 0.9 },
+      transition: { 
+        type: "spring" as const, 
+        stiffness: 500, 
+        damping: 30 
+      }
+    }
+  };
+
   const handleGeneratePassword = useCallback(() => {
     const newPassword = generateSecurePassword(16);
     setEncryptionPassword(newPassword);
     setEncryptionPasswordConfirm(newPassword);
-  }, []);
+  }, [setEncryptionPassword, setEncryptionPasswordConfirm]);
 
 
   // SEO: Update page title and meta tags based on mode
@@ -109,9 +131,7 @@ function App() {
 
       <motion.div 
         className="main-container"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        {...motionSettings.mainContainer}
       >
         {/* Header */}
         <Header
@@ -119,6 +139,7 @@ function App() {
           onLanguageChange={setLanguage}
           timeStatus={timeStatus}
           t={t}
+          isMobile={isMobile}
         />
 
         {/* Mode Switcher */}
@@ -127,84 +148,121 @@ function App() {
           onModeChange={setMode}
           onContactClick={() => setShowContactForm(true)}
           t={t}
+          isMobile={isMobile}
         />
 
         {/* Main Content and Notifications */}
-        <AnimatePresence mode="popLayout">
-          {mode === 'sign' ? (
-            <SignSection
-              key="sign"
-              language={language}
-              files={files}
-              folderName={folderName}
-              creatorId={creatorId}
-              setCreatorId={setCreatorId}
-              onFolderSelect={handleFolderSelect}
-              onFileSelect={handleFileSelect}
-              onGenerate={() => generateSignedZip(
-                files,
-                creatorId,
-                folderName,
-                enableEncryption,
-                encryptionPassword,
-                encryptionPasswordConfirm
-              )}
-              isGenerating={isGenerating}
-              folderInputRef={folderInputRef}
-              fileInputRef={fileInputRef}
-              enableEncryption={enableEncryption}
-              setEnableEncryption={setEnableEncryption}
-              encryptionPassword={encryptionPassword}
-              setEncryptionPassword={setEncryptionPassword}
-              encryptionPasswordConfirm={encryptionPasswordConfirm}
-              setEncryptionPasswordConfirm={setEncryptionPasswordConfirm}
-              onGeneratePassword={handleGeneratePassword}
-            />
-          ) : mode === 'verify' ? (
-            <VerifySection
-              key="verify"
-              language={language}
-              onDrop={(files: File[]) => verifySignature(files, t)}
-              verificationResult={verificationResult}
-            />
-          ) : mode === 'extract' ? (
-            <ExtractSection
-              key="extract"
-              language={language}
-              onDrop={handleExtractDrop}
-              extractedZipsig={extractedZipsig}
-              extractedFiles={extractedFiles}
-              extractPassword={extractPassword}
-              setExtractPassword={setExtractPassword}
-              onExtract={() => extractAndDecrypt(t)}
-              isExtracting={isExtracting}
-            />
-          ) : (
-            <FAQSection
-              key="faq"
-              language={language}
-            />
-          )}
-          
-          {/* Success Notification - moved inside same AnimatePresence */}
-          {showNotification && (
-            <motion.div
-              key="notification"
-              className="success-notification"
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -50, scale: 0.9 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 500, 
-                damping: 30 
-              }}
-            >
-              <Check size={20} />
-              <span>{t.signedZipGenerated}</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {(() => {
+          const renderSection = () => {
+            switch (mode) {
+              case 'sign':
+                return (
+                  <SignSection
+                    key={isMobile ? undefined : "sign"}
+                    language={language}
+                    files={files}
+                    folderName={folderName}
+                    creatorId={creatorId}
+                    setCreatorId={setCreatorId}
+                    onFolderSelect={handleFolderSelect}
+                    onFileSelect={handleFileSelect}
+                    onGenerate={() => generateSignedZip(
+                      files,
+                      creatorId,
+                      folderName,
+                      enableEncryption,
+                      encryptionPassword,
+                      encryptionPasswordConfirm
+                    )}
+                    isGenerating={isGenerating}
+                    folderInputRef={folderInputRef}
+                    fileInputRef={fileInputRef}
+                    enableEncryption={enableEncryption}
+                    setEnableEncryption={setEnableEncryption}
+                    encryptionPassword={encryptionPassword}
+                    setEncryptionPassword={setEncryptionPassword}
+                    encryptionPasswordConfirm={encryptionPasswordConfirm}
+                    setEncryptionPasswordConfirm={setEncryptionPasswordConfirm}
+                    onGeneratePassword={handleGeneratePassword}
+                    isMobile={isMobile}
+                  />
+                );
+              case 'verify':
+                return (
+                  <VerifySection
+                    key={isMobile ? undefined : "verify"}
+                    language={language}
+                    onDrop={(files: File[]) => verifySignature(files, t)}
+                    verificationResult={verificationResult}
+                    isMobile={isMobile}
+                  />
+                );
+              case 'extract':
+                return (
+                  <ExtractSection
+                    key={isMobile ? undefined : "extract"}
+                    language={language}
+                    onDrop={handleExtractDrop}
+                    extractedZipsig={extractedZipsig}
+                    extractedFiles={extractedFiles}
+                    extractPassword={extractPassword}
+                    setExtractPassword={setExtractPassword}
+                    onExtract={() => extractAndDecrypt(t)}
+                    isExtracting={isExtracting}
+                    isMobile={isMobile}
+                  />
+                );
+              default:
+                return (
+                  <FAQSection
+                    key={isMobile ? undefined : "faq"}
+                    language={language}
+                    isMobile={isMobile}
+                  />
+                );
+            }
+          };
+
+          const renderNotification = () => {
+            if (!showNotification) return null;
+            
+            if (isMobile) {
+              return (
+                <div className="success-notification">
+                  <Check size={20} />
+                  <span>{t.signedZipGenerated}</span>
+                </div>
+              );
+            }
+            
+            return (
+              <motion.div
+                key="notification"
+                className="success-notification"
+                {...motionSettings.notification}
+              >
+                <Check size={20} />
+                <span>{t.signedZipGenerated}</span>
+              </motion.div>
+            );
+          };
+
+          if (isMobile) {
+            return (
+              <div>
+                {renderSection()}
+                {renderNotification()}
+              </div>
+            );
+          }
+
+          return (
+            <AnimatePresence mode="popLayout">
+              {renderSection()}
+              {renderNotification()}
+            </AnimatePresence>
+          );
+        })()}
       </motion.div>
     </div>
   );

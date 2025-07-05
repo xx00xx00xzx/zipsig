@@ -14,14 +14,31 @@ interface HeaderProps {
     apiStatus: 'online' | 'offline' | 'checking';
   };
   t: Translations;
+  isMobile?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = React.memo(({
   language,
   onLanguageChange,
   timeStatus,
-  t
+  t,
+  isMobile = false
 }) => {
+  
+  // Conditional motion components
+  const MotionButton = ({ children, className, onClick, ...motionProps }: any) => {
+    if (isMobile) {
+      return <button className={className} onClick={onClick}>{children}</button>;
+    }
+    return <motion.button className={className} onClick={onClick} {...motionProps}>{children}</motion.button>;
+  };
+
+  const MotionDiv = ({ children, className, ...motionProps }: any) => {
+    if (isMobile) {
+      return <div className={className}>{children}</div>;
+    }
+    return <motion.div className={className} {...motionProps}>{children}</motion.div>;
+  };
   return (
     <div className="hero-header">
       <div style={{ 
@@ -35,7 +52,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <ZipSigLogo className="hero-logo" />
         </div>
         <h1 className="hero-title">{t.title}</h1>
-        <motion.button
+        <MotionButton
           className="language-toggle"
           onClick={() => onLanguageChange(language === 'ja' ? 'en' : 'ja')}
           whileHover={{ scale: 1.05 }}
@@ -44,7 +61,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         >
           <Globe size={20} />
           <span>{language === 'ja' ? 'EN' : 'JP'}</span>
-        </motion.button>
+        </MotionButton>
       </div>
       <p className="hero-subtitle">{t.subtitle}</p>
       
@@ -56,16 +73,16 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             <span className="time-value">
               {timeStatus.utcTime ? formatUTCDateTime(timeStatus.utcTime, language) : t.checking}
             </span>
-            <motion.div 
+            <MotionDiv 
               className={`api-status ${timeStatus.apiStatus}`}
-              animate={timeStatus.apiStatus === 'checking' ? { 
+              animate={!isMobile && timeStatus.apiStatus === 'checking' ? { 
                 scale: [1, 1.1, 1],
                 opacity: [1, 0.5, 1]
               } : undefined}
-              transition={{ 
+              transition={!isMobile ? { 
                 duration: 1, 
                 repeat: timeStatus.apiStatus === 'checking' ? Infinity : 0 
-              }}
+              } : {}}
             >
               {timeStatus.apiStatus === 'online' && <Check size={12} />}
               {timeStatus.apiStatus === 'offline' && <AlertCircle size={12} />}
@@ -75,7 +92,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 {timeStatus.apiStatus === 'offline' && t.apiOffline}
                 {timeStatus.apiStatus === 'checking' && t.checking}
               </span>
-            </motion.div>
+            </MotionDiv>
           </div>
           <div className="time-row">
             <span className="time-label">{t.localTime}</span>

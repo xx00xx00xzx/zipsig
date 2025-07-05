@@ -8,14 +8,24 @@ interface ModeSwitcherProps {
   onModeChange: (mode: 'sign' | 'verify' | 'extract' | 'faq') => void;
   onContactClick: () => void;
   t: Translations;
+  isMobile?: boolean;
 }
 
 export const ModeSwitcher: React.FC<ModeSwitcherProps> = React.memo(({
   mode,
   onModeChange,
   onContactClick,
-  t
+  t,
+  isMobile = false
 }) => {
+  
+  // Conditional motion components
+  const MotionButton = ({ children, className, onClick, ...motionProps }: any) => {
+    if (isMobile) {
+      return <button className={className} onClick={onClick}>{children}</button>;
+    }
+    return <motion.button className={className} onClick={onClick} {...motionProps}>{children}</motion.button>;
+  };
   return (
     <div className="mode-switcher-container">
       <div className="mode-switcher">

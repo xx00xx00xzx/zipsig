@@ -26,6 +26,7 @@ interface SignSectionProps {
   encryptionPasswordConfirm: string;
   setEncryptionPasswordConfirm: (password: string) => void;
   onGeneratePassword: () => void;
+  isMobile?: boolean;
 }
 
 export const SignSection = React.memo(function SignSection({ 
@@ -46,7 +47,8 @@ export const SignSection = React.memo(function SignSection({
   setEncryptionPassword,
   encryptionPasswordConfirm,
   setEncryptionPasswordConfirm,
-  onGeneratePassword
+  onGeneratePassword,
+  isMobile = false
 }: SignSectionProps) {
   const t = useTranslation(language);
   
@@ -55,6 +57,42 @@ export const SignSection = React.memo(function SignSection({
   
   // Calculate total file size
   const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+  // Create conditional motion component
+  const MotionDiv = ({ children, className, ...motionProps }: any) => {
+    if (isMobile) {
+      return <div className={className}>{children}</div>;
+    }
+    return <motion.div className={className} {...motionProps}>{children}</motion.div>;
+  };
+
+  const MotionButton = ({ children, className, onClick, ...motionProps }: any) => {
+    if (isMobile) {
+      return <button className={className} onClick={onClick}>{children}</button>;
+    }
+    return <motion.button className={className} onClick={onClick} {...motionProps}>{children}</motion.button>;
+  };
+
+  const MotionInput = ({ className, ...motionProps }: any) => {
+    if (isMobile) {
+      return <input className={className} {...motionProps} />;
+    }
+    return <motion.input className={className} {...motionProps} />;
+  };
+
+  const MotionLabel = ({ children, className, ...motionProps }: any) => {
+    if (isMobile) {
+      return <label className={className}>{children}</label>;
+    }
+    return <motion.label className={className} {...motionProps}>{children}</motion.label>;
+  };
+
+  const ConditionalAnimatePresence = ({ children }: any) => {
+    if (isMobile) {
+      return children;
+    }
+    return <AnimatePresence>{children}</AnimatePresence>;
+  };
 
 
   
@@ -74,7 +112,7 @@ export const SignSection = React.memo(function SignSection({
   const fileTree = buildFileTree(files);
 
   return (
-    <motion.div
+    <MotionDiv
       className="content-section"
       initial={{ opacity: 0, x: -50 }}
       animate={{ opacity: 1, x: 0 }}
@@ -82,7 +120,7 @@ export const SignSection = React.memo(function SignSection({
       transition={{ duration: 0.5 }}
     >
       {/* File Selection */}
-      <motion.div
+      <MotionDiv
         className="file-selection"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -92,7 +130,7 @@ export const SignSection = React.memo(function SignSection({
         <p className="section-description">{t.dragAndDrop}</p>
         
         <div className="selection-buttons">
-          <motion.button
+          <MotionButton
             className="selection-button"
             onClick={() => fileInputRef.current?.click()}
             whileHover={{ scale: 1.05 }}
@@ -101,9 +139,9 @@ export const SignSection = React.memo(function SignSection({
           >
             <Upload size={20} />
             {t.selectFiles}
-          </motion.button>
+          </MotionButton>
           
-          <motion.button
+          <MotionButton
             className="selection-button"
             onClick={() => folderInputRef.current?.click()}
             whileHover={{ scale: 1.05 }}
@@ -112,7 +150,7 @@ export const SignSection = React.memo(function SignSection({
           >
             <Upload size={20} />
             {t.selectFolder}
-          </motion.button>
+          </MotionButton>
         </div>
 
         <input
@@ -129,19 +167,19 @@ export const SignSection = React.memo(function SignSection({
           onChange={onFolderSelect}
           style={{ display: 'none' }}
         />
-      </motion.div>
+      </MotionDiv>
 
       {/* Selected Files Display */}
-      <AnimatePresence>
+      <ConditionalAnimatePresence>
         {files.length > 0 && (
-          <motion.div
+          <MotionDiv
             className="selected-files"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <motion.div
+            <MotionDiv
               className="files-header"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -152,9 +190,9 @@ export const SignSection = React.memo(function SignSection({
                 <span className="file-size-display">{formatFileSize(totalSize)}</span>
                 <span className="file-count">{files.length}{t.filesCount}</span>
               </div>
-            </motion.div>
+            </MotionDiv>
 
-            <motion.div
+            <MotionDiv
               className="files-tree"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -167,22 +205,23 @@ export const SignSection = React.memo(function SignSection({
                   level={0}
                   expanded={index === 0}
                   onToggle={() => {}}
+                  isMobile={isMobile}
                 />
               ))}
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
         )}
-      </AnimatePresence>
+      </ConditionalAnimatePresence>
 
       {/* Creator ID Input */}
-      <motion.div
+      <MotionDiv
         className="creator-section"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         <label className="input-label">{t.creatorId}</label>
-        <motion.input
+        <MotionInput
           type="text"
           value={creatorId}
           onChange={(e) => setCreatorId(e.target.value)}
@@ -191,17 +230,17 @@ export const SignSection = React.memo(function SignSection({
           whileFocus={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
-      </motion.div>
+      </MotionDiv>
 
       {/* Encryption Options */}
-      <motion.div
+      <MotionDiv
         className="encryption-section"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
         <div className="encryption-toggle-container">
-          <motion.label
+          <MotionLabel
             className="encryption-toggle"
             whileHover={{ scale: 1.01 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -213,9 +252,9 @@ export const SignSection = React.memo(function SignSection({
             />
             <span className="checkmark"></span>
             <span className="toggle-text">{t.enableEncryption}</span>
-          </motion.label>
+          </MotionLabel>
           
-          <motion.button
+          <MotionButton
             type="button"
             className="info-icon"
             onClick={() => setShowEncryptionInfo(true)}
@@ -225,11 +264,11 @@ export const SignSection = React.memo(function SignSection({
             title={t.encryptionInfo}
           >
             <Info size={18} />
-          </motion.button>
+          </MotionButton>
         </div>
 
         {/* Encryption Info Link */}
-        <motion.button
+        <MotionButton
           type="button"
           className="encryption-info-link"
           onClick={() => setShowEncryptionInfo(true)}
@@ -239,11 +278,11 @@ export const SignSection = React.memo(function SignSection({
         >
           <Info size={16} />
           <span>{t.encryptionInfo}</span>
-        </motion.button>
+        </MotionButton>
 
         <AnimatePresence>
           {enableEncryption && (
-            <motion.div
+            <MotionDiv
               className="password-inputs"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -253,7 +292,7 @@ export const SignSection = React.memo(function SignSection({
               <div className="password-field">
                 <label className="input-label">{t.encryptionPassword}</label>
                 <div className="password-input-container">
-                  <motion.input
+                  <MotionInput
                     type="password"
                     value={encryptionPassword}
                     onChange={(e) => setEncryptionPassword(e.target.value)}
@@ -262,7 +301,7 @@ export const SignSection = React.memo(function SignSection({
                     whileFocus={{ scale: 1.02 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
-                  <motion.button
+                  <MotionButton
                     type="button"
                     className="generate-password-btn"
                     onClick={onGeneratePassword}
@@ -271,13 +310,13 @@ export const SignSection = React.memo(function SignSection({
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   >
                     {t.generatePassword}
-                  </motion.button>
+                  </MotionButton>
                 </div>
               </div>
               
               <div className="password-field">
                 <label className="input-label">{t.encryptionPasswordConfirm}</label>
-                <motion.input
+                <MotionInput
                   type="password"
                   value={encryptionPasswordConfirm}
                   onChange={(e) => setEncryptionPasswordConfirm(e.target.value)}
@@ -289,7 +328,7 @@ export const SignSection = React.memo(function SignSection({
               </div>
 
               {passwordError && (
-                <motion.div
+                <MotionDiv
                   className="password-error"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -297,21 +336,21 @@ export const SignSection = React.memo(function SignSection({
                 >
                   <AlertCircle size={16} />
                   <span>{passwordError}</span>
-                </motion.div>
+                </MotionDiv>
               )}
-            </motion.div>
+            </MotionDiv>
           )}
         </AnimatePresence>
-      </motion.div>
+      </MotionDiv>
 
       {/* Generate Button */}
-      <motion.div
+      <MotionDiv
         className="action-container"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
-        <motion.button
+        <MotionButton
           className={`generate-button ${!canGenerate ? 'disabled' : ''}`}
           onClick={onGenerate}
           disabled={!canGenerate || isGenerating}
@@ -321,22 +360,22 @@ export const SignSection = React.memo(function SignSection({
         >
           <AnimatePresence mode="wait">
             {isGenerating ? (
-              <motion.div
+              <MotionDiv
                 key="loading"
                 className="button-content"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <motion.div
+                <MotionDiv
                   className="loading-spinner"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  animate={isMobile ? {} : { rotate: 360 }}
+                  transition={isMobile ? {} : { duration: 1, repeat: Infinity, ease: "linear" }}
                 />
                 {t.generating}
-              </motion.div>
+              </MotionDiv>
             ) : (
-              <motion.div
+              <MotionDiv
                 key="generate"
                 className="button-content"
                 initial={{ opacity: 0 }}
@@ -345,11 +384,11 @@ export const SignSection = React.memo(function SignSection({
               >
                 <Lock size={18} />
                 {t.generateSignedZip}
-              </motion.div>
+              </MotionDiv>
             )}
           </AnimatePresence>
-        </motion.button>
-      </motion.div>
+        </MotionButton>
+      </MotionDiv>
 
       {/* Encryption Info Popup */}
       <InfoPopup
@@ -358,6 +397,6 @@ export const SignSection = React.memo(function SignSection({
         title={t.encryptionInfoTitle}
         content={t.encryptionInfoContent}
       />
-    </motion.div>
+    </MotionDiv>
   );
 });

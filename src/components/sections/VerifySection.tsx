@@ -9,15 +9,38 @@ interface VerifySectionProps {
   language: Language;
   onDrop: (files: File[]) => void;
   verificationResult: VerificationResult | null;
+  isMobile?: boolean;
 }
 
-export const VerifySection = React.memo(function VerifySection({ language, onDrop, verificationResult }: VerifySectionProps) {
+export const VerifySection = React.memo(function VerifySection({ language, onDrop, verificationResult, isMobile = false }: VerifySectionProps) {
   const t = useTranslation(language);
   const [privateKeyResult, setPrivateKeyResult] = useState<{
     isValid: boolean;
     message: string;
   } | null>(null);
   const [hashCopied, setHashCopied] = useState(false);
+
+  // Create conditional motion components
+  const MotionDiv = ({ children, className, ...motionProps }: any) => {
+    if (isMobile) {
+      return <div className={className}>{children}</div>;
+    }
+    return <motion.div className={className} {...motionProps}>{children}</motion.div>;
+  };
+
+  const MotionButton = ({ children, className, onClick, ...motionProps }: any) => {
+    if (isMobile) {
+      return <button className={className} onClick={onClick}>{children}</button>;
+    }
+    return <motion.button className={className} onClick={onClick} {...motionProps}>{children}</motion.button>;
+  };
+
+  const ConditionalAnimatePresence = ({ children }: any) => {
+    if (isMobile) {
+      return children;
+    }
+    return <AnimatePresence>{children}</AnimatePresence>;
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

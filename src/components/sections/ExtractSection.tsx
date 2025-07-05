@@ -16,6 +16,7 @@ interface ExtractSectionProps {
   setExtractPassword: (password: string) => void;
   onExtract: () => void;
   isExtracting: boolean;
+  isMobile?: boolean;
 }
 
 export const ExtractSection = React.memo(function ExtractSection({
@@ -26,7 +27,8 @@ export const ExtractSection = React.memo(function ExtractSection({
   extractPassword,
   setExtractPassword,
   onExtract,
-  isExtracting
+  isExtracting,
+  isMobile = false
 }: ExtractSectionProps) {
   const t = useTranslation(language);
   const [hashCopied, setHashCopied] = useState(false);

@@ -5,9 +5,10 @@ import { useTranslation, type Language } from '../../translations';
 
 interface FAQSectionProps {
   language: Language;
+  isMobile?: boolean;
 }
 
-export const FAQSection = React.memo(function FAQSection({ language }: FAQSectionProps) {
+export const FAQSection = React.memo(function FAQSection({ language, isMobile = false }: FAQSectionProps) {
   const t = useTranslation(language);
   
   const faqItems = [
